@@ -9,10 +9,11 @@ typedef struct UserInfo
 	char password[32];
 }info;
 
+void draw_string(char *buf[], unsigned int line);
+void show_tips(int);
+void show_warn(int n);
+void check_qiut(char status[],int i);
 void clean_sts();
 void SignIn(int,info *);
 void Admin();
 void SignUp();
-void show_tips(int);
-void show_warn(int n);
-void check_qiut(char status[],int i);

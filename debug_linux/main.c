@@ -1,24 +1,64 @@
 #include "init.h"
-
+#define rows0 5
+#define rows 9
+#define rows1 5
+#define rows2 9
 info admin = {"root","root"}; //管理员用户
-info guest = {0,0}; //普通用户
+info guest = {"n","n"}; //普通用户
 char sts[3] = {'-','-','-'},key = 0; //返回标志
+
+char *title[rows0] = {
+"	 ____                       _     _               _     ",
+"	/ ___| _ __ ___   __ _ _ __| |_  | |    ___   ___| | __ ",
+"	\\___ \\| '_ ` _ \\ / _` | '__| __| | |   / _ \\ / __| |/ / ",
+"	 ___) | | | | | | (_| | |  | |_  | |__| (_) | (__|   <  ",
+"	|____/|_| |_| |_|\\__,_|_|   \\__| |_____\\___/ \\___|_|\\_\\ "};
+
+char *menu[rows] = {
+"	$*******************************************************$",
+"	$		                                        $",
+"	$			[1] 登录                        $",
+"	$							$",
+"	$			[2] 管理			$",
+"	$							$",
+"	$			[3] 退出			$",
+"	$							$",
+"	$*******************************************************$"
+};
+
+char *menu1[rows1] = {
+"	$*******************************************************$",
+"	$							$",
+"	$>>>>>>>>>>>>>>>>>>>>> 请登录验证 <<<<<<<<<<<<<<<<<<<<<<$",
+"	$							$",
+"	$	> 用户名：",
+};
+
+char *menu2[rows2] = {
+"	$*******************************************************$",
+"	$							$",
+"	$		     [1] 添加用户       		$",
+"	$							$",
+"	$		     [2] 修改密码   			$",
+"	$							$",
+"	$		     [3] 返回    			$",
+"	$							$",
+"	$*******************************************************$"
+};
 
 int main()
 {
 	int opt = 0,i=0,fsh=1;
 	char sts0 = 0;
-	//char *psts = sts;
 	init_root();
 	
 	while(!sts0)
 	{
 		system("clear"); //清屏
-		printf("*******************************\n");
-		printf("请选择: 1【登录】 2【管理】 3【退出】");
+		draw_string(title,rows0);	//title
+		draw_string(menu,rows);	//menu
 		scanf("%d",&opt);
 		system("clear");
-		printf("*******************************\n");
 		switch(opt) //操作选项
 		{
 			case 0: {
@@ -48,7 +88,7 @@ int main()
 		fflush(stdout);
 
 	}
-	printf("已经完全退出\n");
+	printf("\t$  已经完全退出\n");
 	return 0;
 }
 
@@ -56,7 +96,7 @@ void show_warn(int n)
 {
 	while(n--)
 	{
-		printf("操作有误，请%d秒后重试",n);
+		printf("	$  操作有误，请%d秒后重试",n);
 		sleep(1); //延时一秒
 		printf("\r");
 		fflush(stdout);
@@ -80,9 +120,12 @@ void SignIn(int sw,struct UserInfo *user)
 	while(sts[sw]!='n')
 	{
 		system("clear");
-		printf("*******************************\n");
-		printf("***********请登录验证***********\n");
-		printf("用户名：");
+		
+		//draw_string(menu1,rows1);	//menu1
+		//draw_string(title,rows);	//title
+			
+		printf("\t$>>>>>>>>>>>>>>>>>>>>> 请登录验证 <<<<<<<<<<<<<<<<<<<<<<$\n");
+		printf("\t$\t>  用户名:");
 		if(0 == strcmp(adm,user->name))
 			printf("%s\n",user->name);	// admin name can't change
 		else
@@ -91,24 +134,24 @@ void SignIn(int sw,struct UserInfo *user)
 		if(1 == check_info((*user).name))
 		{			
 
-			printf("密码:");
+			printf("\t$\t>  密码:");
 			scanf("%s",user->password);
 			if(strcmp(read_info(user->name),user->password) == 0)
 			{
-				printf("用户密码匹配~\n");
+				printf("\t$  用户密码匹配~\n");
 				sts[sw] = 'n';
 				if(sw == 1)
 					key = 1;
 			}
 			else
 			{
-				printf("用户密码输入错误！\n");
+				printf("\t$  用户密码输入错误！\n");
 				show_warn(3);
 			}
 		}
 		else
 		{
-			printf("用户不存在，请重新输入！\n");
+			printf("\t$  用户不存在，请重新输入！\n");
 			show_warn(3);
 		}
 	}
@@ -124,11 +167,9 @@ void Admin()
 	while(key == 1)
 	{
 		system("clear"); //清屏
-		printf("*******************************\n");
-		printf("请选择: 1【添加用户】 2【删除用户】 3【返回】");
+		draw_string(title,rows0);
+		draw_string(menu2,rows2);
 		scanf("%d",&opt1);
-		system("clear");
-		printf("*******************************\n");		
 		switch(opt1)
 		{
 			case 0:{
@@ -138,7 +179,7 @@ void Admin()
 				SignUp();
 				break;
 			}
-			case 2:{	//【删除用户】
+			case 2:{	//【修改密码】
 
 				break;
 			}
@@ -160,29 +201,30 @@ void Admin()
 /*注册函数-添加用户*/
 void SignUp()
 {
+	
 	char pwd1[32],pwd2[32];
-	system("clear");
 	while(sts[2]!='y')
 	{
-		printf("*******************************\n");
-		printf("*********请输入注册信息*********\n");
-		printf("用户名：");
+		
+		system("clear");
+		draw_string(title,rows0);	
+		printf("\t$\t>  用户名：");
 		scanf("%s",guest.name);
-		printf("密码：");
+		printf("\t$\t>  密码：");
 		scanf("%s",pwd1);
-		printf("密码确认：");
+		printf("\t$\t>  密码确认：");
 		scanf("%s",pwd2);
 		if(strcmp(pwd1,pwd2) == 0)
 		{	
 			strcpy(guest.password,pwd2);  //字符串复制，简便方式
 			/**创建用户信息文件**/
 			store_info(guest.name,guest.password,sizeof(guest.name)); // p[] or p or &p
-			printf("用户添加成功！\n");
+			printf("\t$用户添加成功！\n");
 			sts[2] = 'y';
 		}
 		else
 		{
-			printf("两次输入密码不一致！\n");
+			printf("\t$两次输入密码不一致！\n");
 			show_warn(3);
 		}
 	}
@@ -193,8 +235,9 @@ void SignUp()
 void check_qiut(char *status,int i)
 {
 	system("clear");
-	printf("*******************************\n");
-	printf("是否确认要进行身份验证: y n?");
+//	printf("*******************************\n");
+	draw_string(title,rows0);
+	printf("\t$是否确认要进行身份验证: y n?");
 	scanf("%s",status);	
 }
 
@@ -202,10 +245,21 @@ void show_tips(int n)  //提示
 {
 	while(n--)
 	{
-		printf("距离返回上级菜单，还有%d秒",n);
+		printf("	$距离返回上级菜单，还有%d秒",n);
 		printf("\r");
 		fflush(stdout);
 		sleep(1); //延时一秒
 	}
 	system("clear"); 
+}
+
+
+void draw_string(char *buf[], unsigned int line)
+{
+	int i;
+	for (i = 0; i < line; i++) 
+	{
+		printf("%s\n", buf[i]);
+	}
+
 }

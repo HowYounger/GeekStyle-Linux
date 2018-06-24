@@ -4,8 +4,6 @@ char buf[32]={0};  // the max is 32 bit,for read_info function
 
 void init_root()
 {
-	//int dd = -1,mode = 0777; 
-    //char dname[42]={"user"};
 	char name[32]="root",pwd[32]="root";
 	int res = 0;
 	if(check_info(name) == 0)
@@ -30,12 +28,12 @@ void store_info(char *name,char *pwd,int len)
 	fd = open(fname,O_WRONLY | O_CREAT | O_TRUNC,mode); // 写、创建、覆盖
 	if(fd<0)
 	{			// printf %s the way array address
-		printf("open file\"%s\" failed,errno=%d.\n",fname,errno); 
+		//printf("open file\"%s\" failed,errno=%d.\n",fname,errno); 
 
 	}
 	res = write(fd,pwd,len);
 	//res = write(fd,buf,sizeof(buf));
-	printf("write %d bytes to \"%s\".\n",res,fname);
+	//printf("write %d bytes to \"%s\".\n",res,fname);
 	fsync(fd);	
 	close(fd);
 }
@@ -54,7 +52,7 @@ int check_info(char *name)
 	if(fd<0)
 	{
 		//printf("open file\"%s\" failed,errno = %d.\n",fname,errno);
-		printf("the info of user is no exit!\n");
+		//printf("the info of user is no exit!\n");
 		close(fd);
 		return 0;
 	}
@@ -80,8 +78,8 @@ char * read_info(char *name)
 	fd = open(fname,O_RDONLY);
 	if(fd<0)
 	{
-		printf("open file\"%s\" failed,errno = %d.\n",name,errno);
-		printf("the buf:%s",buf);
+		//printf("open file\"%s\" failed,errno = %d.\n",name,errno);
+		//printf("the buf:%s",buf);
 		close(fd);
 		return buf;
 	}
@@ -89,7 +87,7 @@ char * read_info(char *name)
 	{
 		res = read(fd,buf,sizeof(buf));
 		buf[res]='\0';
-		printf("read %d bytes from \"%s\" data = \"%s\".\n",res,name,buf);
+		//printf("read %d bytes from \"%s\" data = \"%s\".\n",res,name,buf);
 		close(fd);
 		return buf;
 	}
