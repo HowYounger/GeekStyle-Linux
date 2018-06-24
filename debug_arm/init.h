@@ -9,6 +9,10 @@ typedef struct UserInfo
 	char password[32];
 }info;
 
+extern void water_leds();
+extern void warn_buzzer();
+
+void chang_pwd();
 void draw_string(char *buf[], unsigned int line);
 void show_tips(int);
 void show_warn(int n);
@@ -17,5 +21,3 @@ void clean_sts();
 void SignIn(int,info *);
 void Admin();
 void SignUp();
-
-extern void getpasswd(char* passwd, int size);  

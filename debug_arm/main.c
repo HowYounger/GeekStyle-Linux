@@ -1,10 +1,12 @@
 #include "init.h"
 #define rows0 5
 #define rows 9
-#define rows1 5
+#define rows1 4
 #define rows2 9
+#define rows22 2
+
 info admin = {"root","root"}; //管理员用户
-info guest = {"n","n"}; //普通用户
+info guest = {"\0","\0"}; //普通用户
 char sts[3] = {'-','-','-'},key = 0; //返回标志
 
 char *title[rows0] = {
@@ -12,7 +14,7 @@ char *title[rows0] = {
 "	/ ___| _ __ ___   __ _ _ __| |_  | |    ___   ___| | __ ",
 "	\\___ \\| '_ ` _ \\ / _` | '__| __| | |   / _ \\ / __| |/ / ",
 "	 ___) | | | | | | (_| | |  | |_  | |__| (_) | (__|   <  ",
-"	|____/|_| |_| |_|\\__,_|_|   \\__| |_____\\___/ \\___|_|\\_\\ "};
+"	|____/|_| |_| |_|\\__,_|_|   \\__| |_____\\___/ \\___|_|\\_\\ \n"};
 
 char *menu[rows] = {
 "	$*******************************************************$",
@@ -31,7 +33,11 @@ char *menu1[rows1] = {
 "	$							$",
 "	$>>>>>>>>>>>>>>>>>>>>> 请登录验证 <<<<<<<<<<<<<<<<<<<<<<$",
 "	$							$",
-"	$	> 用户名：",
+};
+
+char *menu22[rows22] = {
+"       $*******************************************************$",
+"       $                                                       $",
 };
 
 char *menu2[rows2] = {
@@ -96,10 +102,11 @@ void show_warn(int n)
 {
 	while(n--)
 	{
-		printf("	$  操作有误，请%d秒后重试",n);
-		sleep(1); //延时一秒
+		printf("	#  操作有误，请%d秒后重试",n);
+		//sleep(1); //延时一秒
 		printf("\r");
 		fflush(stdout);
+		warn_buzzer();	//1s
 	}
 	system("clear"); 
 }
@@ -121,10 +128,9 @@ void SignIn(int sw,struct UserInfo *user)
 	{
 		system("clear");
 		
-		//draw_string(menu1,rows1);	//menu1
-		//draw_string(title,rows);	//title
-			
-		printf("\t$>>>>>>>>>>>>>>>>>>>>> 请登录验证 <<<<<<<<<<<<<<<<<<<<<<$\n");
+		draw_string(title,rows0);	//title
+		draw_string(menu1,rows1);	//menu1
+		//printf("\t$>>>>>>>>>>>>>>>>>>>>> 请登录验证 <<<<<<<<<<<<<<<<<<<<<<$\n");
 		printf("\t$\t>  用户名:");
 		if(0 == strcmp(adm,user->name))
 			printf("%s\n",user->name);	// admin name can't change
@@ -147,7 +153,7 @@ void SignIn(int sw,struct UserInfo *user)
 			else
 			{
 				printf("\n\t$  用户密码输入错误！\n");
-				show_warn(3);
+				show_warn(5);
 			}
 		}
 		else
@@ -157,7 +163,7 @@ void SignIn(int sw,struct UserInfo *user)
 		}
 	}
 
-	show_tips(3);
+	show_tips(6);
 }
 
 /*管理函数*/
@@ -181,7 +187,7 @@ void Admin()
 				break;
 			}
 			case 2:{	//【修改密码】
-
+				chang_pwd();
 				break;
 			}
 			case 3:{	//【返回】
@@ -190,14 +196,15 @@ void Admin()
 				break;
 			}
 			default:{
-				show_warn(3);
+				show_warn(5);
 				break;
 			}
 		}
 	}
 	
-
 }
+
+
 
 /*注册函数-添加用户*/
 void SignUp()
@@ -211,7 +218,7 @@ void SignUp()
 		draw_string(title,rows0);	
 		printf("\t$\t>  用户名：");
 		scanf("%s",guest.name);
-		printf("\t$\t>  密码：");
+		printf("\n\t$\t>  密码：");
 		//scanf("%s",pwd1);
 		getpasswd(pwd1,sizeof(pwd1));  
 		printf("\t$\t>  密码确认：");
@@ -228,11 +235,42 @@ void SignUp()
 		else
 		{
 			printf("\t$两次输入密码不一致！\n");
-			show_warn(3);
+			show_warn(5);
 		}
 	}
 	sts[2] = '-'; //清除返回标志
-	show_tips(4);
+	show_tips(9);
+}
+
+void chang_pwd()
+{
+	char pwd1[32],pwd2[32],key=0;
+	while(key == 0)
+	{
+		system("clear");
+		draw_string(title,rows0);
+		draw_string(menu22,rows22);
+		printf("       $>\t>  新密码：");
+		getpasswd(pwd1,sizeof(pwd1));  
+		printf("       $>\t>  新密码确认:");
+		getpasswd(pwd2,sizeof(pwd2));  
+
+		if(strcmp(pwd1,pwd2) == 0)
+		{	
+			strcpy(admin.password,pwd2);  //字符串复制，简便方式
+			/**创建用户信息文件**/
+			store_info(admin.name,admin.password,sizeof(admin.name)); // p[] or p or &p
+			printf("\t#  管理密码修改成功！\n");
+			key = 1;
+		}
+		else
+		{
+			printf("\t#  两次输入密码不一致！\n");
+			show_warn(5);
+		}
+	}
+	key = 0;
+	show_tips(3);  //提示
 }
 
 void check_qiut(char *status,int i)
@@ -248,10 +286,11 @@ void show_tips(int n)  //提示
 {
 	while(n--)
 	{
-		printf("	$距离返回上级菜单，还有%d秒",n);
+		printf("	#  距离返回上级菜单，还有%d秒",n);
 		printf("\r");
 		fflush(stdout);
-		sleep(1); //延时一秒
+		//sleep(1); 
+		water_leds();//延时一秒
 	}
 	system("clear"); 
 }
